@@ -25,13 +25,22 @@ Plugin 'junegunn/seoul256.vim'
 Plugin 'tpope/vim-rhubarb'
 Plugin 'morhetz/gruvbox'
 Plugin 'leafgarland/typescript-vim'
+Plugin 'owickstrom/vim-colors-paramount'
 
 "FZF
 Plugin 'junegunn/fzf.vim'
 let g:fzf_command_prefix = 'FZF'
 set runtimepath +=~/.fzf
 map <leader>f :FZFRg<CR>
+map <leader>w :FZFWordRg<CR>
 map <leader>p :FZF<CR>
+
+command! -bang -nargs=* FZFWordRg
+      \ call fzf#vim#grep(
+      \   'rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --glob "!.git/*" --color "always" '
+      \      . shellescape(expand("<cword>")), 1, {'options': '--delimiter : --nth 4..'}, <bang>0
+      \ )
+
 command! -bang -nargs=* FZFRg
       \ call fzf#vim#grep(
       \   'rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --glob "!.git/*" --color "always" '
@@ -52,7 +61,6 @@ let g:fzf_colors =
   \ 'spinner': ['fg', 'Label'],
   \ 'header':  ['fg', 'Comment'] }
 
-
 " Add all your plugins here (note older versions of Vundle used Bundle instead of Plugin)
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -64,13 +72,16 @@ set nowrap
 " airline
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#ale#enabled = 1
-let g:airline_theme='jellybeans'
+let g:airline_theme='soda'
 let g:airline_powerline_fonts = 1
 
 
 " ale
 let g:ale_lint_on_text_changed = 'never'
+let g:ale_ale_fix_on_save = 1
 let g:ale_list_window_Size = 4
+map <C-b> :ALEGoToDefinition<CR>
+map <leader>r :ALEFindReferences<CR>
 let g:ale_fixers = {
 \   '*': ['remove_trailing_lines', 'trim_whitespace'],
 \   'typescript': [],
@@ -78,12 +89,19 @@ let g:ale_fixers = {
 let g:ale_linters = {
 \   'typescript': ['tsserver', 'eslint'],
 \   'go': ['gopls', 'gocode', 'golint'],
+\   'cpp': ['g++', 'clang', 'clangd'],
+\   'java': ['javalsp'],
+\   'python': ['flake8', 'mypy', 'pylint', 'pyls'],
 \}
 
 
 " for YCM
+let g:ycm_python_binary_path = 'python'
 let g:ycm_autoclose_preview_window_after_completion=1
-map <C-b> :YcmCompleter GoToDefinitionElseDeclaration<CR>
+let g:ycm_clangd_uses_ycmd_caching = 0
+let g:ycm_clangd_binary_path = exepath("clangd")
+
+"map <C-b> :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
 " for backspace
 set backspace=indent,eol,start
@@ -106,11 +124,19 @@ au BufNewFile,BufRead *.py
     \ set fileformat=unix |
     \ set colorcolumn=80
 
+au BufNewFile,BufRead *.cpp
+    \ set tabstop=4 |
+    \ set softtabstop=4 |
+    \ set shiftwidth=4 |
+    \ set autoindent |
+    \ set fileformat=unix |
+    \ set colorcolumn=100
+
 " For javascript development
 au BufNewFile,BufRead *.js,*.jsx,*.ts,*.tsx
     \ set tabstop=2 |
     \ set softtabstop=2 |
-    \ set shiftwidth=2 |
+    \ set shiftwidth=2 | 
     \ set autoindent |
     \ set expandtab |
     \ set fileformat=unix
@@ -166,20 +192,24 @@ let g:go_highlight_build_constraints = 1
 au Filetype go nnoremap <leader>v :vsp <CR>:exe "GoDef" <CR>
 au Filetype go nnoremap <leader>s :sp <CR>:exe "GoDef"<CR>
 au Filetype go nnoremap <leader>t :tab split <CR>:exe "GoDef"<CR>
-au Filetype go nnoremap <leader>r :exe "GoReferrers"<CR>
 au Filetype go nnoremap <leader>c :exe "GoCallees"<CR>
 au Filetype go nnoremap <leader>d :exe "GoDecls"<CR>
+au Filetype go nnoremap <leader>r :exe "GoReferrers"<CR>
 au Filetype go nnoremap <leader>e :exe "GoDescribe"<CR>
 au Filetype go nnoremap <leader>i :exe "GoImports"<CR>
 au Filetype go nnoremap <leader>a :exe "GoInfo"<CR>
 au Filetype go nnoremap <leader>m :exe "GoMetaLinter"<CR>
+
+" Use YouCompleteMe for go to definition in C++/C files
+au Filetype cpp nnoremap <C-b> :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
 " vim Fugitive hotkeys
 nnoremap <leader>g :Gstatus<CR>
 " colorscheme
 "let g:seoul256_background = 234
 "colo seoul256
-colorscheme gruvbox
+colorscheme paramount
 
 " for easy searching
 vnoremap // y/<C-R>"<CR>
+
