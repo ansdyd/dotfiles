@@ -221,4 +221,3 @@ colo seoul256
 
 " for easy searching
 vnoremap // y/<C-R>"<CR>
-n
