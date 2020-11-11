@@ -24,6 +24,7 @@ Plugin 'vim-airline/vim-airline-themes'
 Plugin 'junegunn/seoul256.vim'
 Plugin 'tpope/vim-rhubarb'
 Plugin 'morhetz/gruvbox'
+Plugi 'mhinz/vim-signify'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'owickstrom/vim-colors-paramount'
 
@@ -61,6 +62,10 @@ let g:fzf_colors =
   \ 'spinner': ['fg', 'Label'],
   \ 'header':  ['fg', 'Comment'] }
 
+
+autocmd FileType qf wincmd J
+
+
 " Add all your plugins here (note older versions of Vundle used Bundle instead of Plugin)
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -72,23 +77,24 @@ set nowrap
 " airline
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#ale#enabled = 1
-let g:airline_theme='soda'
+let g:airline_theme='deus'
 let g:airline_powerline_fonts = 1
 
 
 " ale
 let g:ale_lint_on_text_changed = 'never'
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 let g:ale_ale_fix_on_save = 1
 let g:ale_list_window_Size = 4
 map <C-b> :ALEGoToDefinition<CR>
 map <leader>r :ALEFindReferences<CR>
 let g:ale_fixers = {
 \   '*': ['remove_trailing_lines', 'trim_whitespace'],
-\   'typescript': [],
+\   'typescript': ['eslint', 'prettier'],
 \}
 let g:ale_linters = {
 \   'typescript': ['tsserver', 'eslint'],
-\   'go': ['gopls', 'gocode', 'golint'],
+\   'go': ['gopls', 'golint'],
 \   'cpp': ['g++', 'clang', 'clangd'],
 \   'java': ['javalsp'],
 \   'python': ['flake8', 'mypy', 'pylint', 'pyls'],
@@ -115,6 +121,11 @@ nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
 
+"better go to definition navigations
+nnoremap <leader>v :vsp <CR>:exe "ALEGoToDefinition" <CR>
+nnoremap <leader>s :sp <CR>:exe "ALEGoToDefinition"<CR>
+nnoremap <leader>t :tab split <CR>:exe "ALEGoToDefinition"<CR>
+
 "To better follow PEP 8 guidelines
 au BufNewFile,BufRead *.py
     \ set tabstop=4 |
@@ -124,7 +135,7 @@ au BufNewFile,BufRead *.py
     \ set fileformat=unix |
     \ set colorcolumn=80
 
-au BufNewFile,BufRead *.cpp
+au BufNewFile,BufRead *.cpp,*.c
     \ set tabstop=4 |
     \ set softtabstop=4 |
     \ set shiftwidth=4 |
@@ -139,6 +150,7 @@ au BufNewFile,BufRead *.js,*.jsx,*.ts,*.tsx
     \ set shiftwidth=2 | 
     \ set autoindent |
     \ set expandtab |
+    \ set syntax=typescript |
     \ set fileformat=unix
 
 " For html development
@@ -189,9 +201,6 @@ let g:go_highlight_build_constraints = 1
 "set statusline+=%*
 
 " Open go doc in vertical window, horizontal, or tab
-au Filetype go nnoremap <leader>v :vsp <CR>:exe "GoDef" <CR>
-au Filetype go nnoremap <leader>s :sp <CR>:exe "GoDef"<CR>
-au Filetype go nnoremap <leader>t :tab split <CR>:exe "GoDef"<CR>
 au Filetype go nnoremap <leader>c :exe "GoCallees"<CR>
 au Filetype go nnoremap <leader>d :exe "GoDecls"<CR>
 au Filetype go nnoremap <leader>r :exe "GoReferrers"<CR>
@@ -206,10 +215,9 @@ au Filetype cpp nnoremap <C-b> :YcmCompleter GoToDefinitionElseDeclaration<CR>
 " vim Fugitive hotkeys
 nnoremap <leader>g :Gstatus<CR>
 " colorscheme
-"let g:seoul256_background = 234
-"colo seoul256
-colorscheme paramount
+let g:seoul256_background = 233
+colo seoul256
+"colorscheme paramount
 
 " for easy searching
 vnoremap // y/<C-R>"<CR>
-
